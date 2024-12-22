@@ -83,9 +83,9 @@ mv ./tmp/airootfs/firefox_policies.json ./opt/firefox-esr/distribution/policies.
 rm -rf ./root/.config
 tar -zxvf "./tmp/airootfs/config.tar.gz" -C ./root/
 
-# remove the firewall
-rm -f ./etc/systemd/system/multi-user.target.wants/iptables.service
-rm -f ./etc/systemd/system/multi-user.target.wants/ip6tables.service
+# remove the firewall (done in YAML defaults below)
+# rm -f ./etc/systemd/system/multi-user.target.wants/iptables.service
+# rm -f ./etc/systemd/system/multi-user.target.wants/ip6tables.service
 
 # disable avahi
 ln -s /dev/null /etc/systemd/system/avahi-daemon.service
@@ -102,6 +102,30 @@ echo 'acas' > "./etc/hostname"
 echo 'alias l="ls"' >> ./root/.bashrc
 echo 'alias la="ls -la"' >> ./root/.bashrc
 echo 'alias activate="source /root/.venv/bin/activate"' >> ./root/.bashrc
+cat >> ./root/.bashrc <<EOF
+
+function https-server() {
+    ip="0.0.0.0"
+    port="\$1"
+    t=\$(mktemp -d)
+    openssl req -x509 -newkey rsa:3072 -nodes -keyout \$t/k -out \$t/c -sha256 -days 5 -subj "/CN=localhost" 2>/dev/null | grep ignoreoutput
+    echo "Serving HTTPS at https://\$ip:\$port/ ..."
+    python -c "import http.server, ssl; \\
+    httpd = http.server.HTTPServer(('\$ip', \$port), http.server.SimpleHTTPRequestHandler); \\
+    ctx = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH); \\
+    ctx.load_cert_chain(certfile='\$t/c', keyfile='\$t/k'); \\
+    httpd.socket = ctx.wrap_socket(httpd.socket, server_side=True); \\
+    httpd.serve_forever();"
+    shred \$t/k||true
+    rm -r \$t
+}
+
+function http-server() {
+    python -m http.server \$1
+}
+
+EOF
+
 
 #### setup autorun script & service
 mv ./tmp/airootfs/autorun.sh ./usr/local/bin/autorun.sh
@@ -116,6 +140,7 @@ mv ./tmp/opt/NessusAPI ./opt/
 # we have to install venv since pytenable is not an arch-native package
 python -m venv ./root/.venv
 source ./root/.venv/bin/activate
+# python -m pip install --upgrade pip
 pip install pytenable
 deactivate
 
@@ -165,7 +190,7 @@ global:
     dostartx: true
     dovnc: false
     noautologin: false
-    nofirewall: false
+    nofirewall: true
 
 autorun:
     ar_disable: true
