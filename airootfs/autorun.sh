@@ -13,7 +13,9 @@ echo -e 'acasuser\nacasuser\ny\n\ny\n' | /opt/nessus/sbin/nessuscli adduser acas
 systemctl stop nessusd.service
 echo -e 'y\n' | /opt/nessus/sbin/nessuscli fix --reset
 /opt/nessus/sbin/nessuscli fetch --security-center
-/opt/nessus/sbin/nessuscli fix --set path_to_java=/bin/java
+if [ -f /bin/java ]; then
+    /opt/nessus/sbin/nessuscli fix --set path_to_java=/bin/java
+fi
 /opt/nessus/sbin/nessuscli fix --set xml_enable_plugin_attributes=yes
 /opt/nessus/sbin/nessuscli fix --set severity_basis=cvss_v4
 /opt/nessus/sbin/nessuscli fix --set login_banner="$DOD_LOGIN_BANNER"

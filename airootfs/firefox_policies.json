@@ -1,0 +1,35 @@
+{
+    "policies": {
+        "DisableAppUpdate": true,
+        "DisableFirefoxStudies": true,
+        "DisableTelemetry": true,
+        "SearchEngines": {
+            "Default": "Google",
+            "PreventInstalls": true
+        },
+        "SearchSuggestEnabled": false,
+        "Homepage": {
+            "URL": "https://localhost:8834/",
+            "Locked": false,
+            "StartPage": "homepage"
+        },
+        "NoDefaultBookmarks": true,
+        "OfferToSaveLogins": false,
+        "PasswordManagerEnabled": false,
+        "DisableProfileImport": true,
+        "Bookmarks": [
+            {
+                "url": "file:///root/Desktop/Procedures",
+                "name": "Procedures"
+            },
+            {
+                "url": "https://localhost:8834",
+                "name": "Nessus Scanner"
+            },
+            {
+                "url": "https://localhost:8834/api#/overview",
+                "name": "Nessus API"
+            }
+        ]
+    }
+}

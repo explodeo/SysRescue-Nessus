@@ -14,6 +14,41 @@ PACKAGE_DIR=/tmp/packages
 
 ISO_NAME="ACASLive.iso"
 
+# Packages to install into the second SRM on top of stock SystemRescue
+### NOTE: jdk-openjdk is <450MB. Remove it and reconfigure 
+PACMAN_PKGS="git \
+            base-devel \
+            fakeroot \
+            ntfs-3g \
+            rpmextract \
+            open-vm-tools \
+            python-pip \
+            jdk-openjdk \
+            python-pyserial \
+            nmap"
+
+PACMAN_PKGS_TO_REMOVE="timeshift \
+                      lftp \
+                      yubico-c \
+                      yubico-c-client \
+                      yubikey-manager \
+                      yubikey-personalization \
+                      yubikey-personalization-gui \
+                      qtpass \
+                      keepassxc \
+                      x11vnc \
+                      geany \
+                      stoken \
+                      openconnect \
+                      pulseaudio-alsa \
+                      openvpn \
+                      networkmanager-openvpn \
+                      xfce4-pulseaudio-plugin" # need to rebuild config.tar.gz
+#                       remmina" # add this line to remove VNC viewing capability
+
+#### Note: we cannot remove avahi, but we can disable the service. this will cause us to lose samba, but whatever
+####       look for the line below: `ln -s /dev/null /etc/systemd/system/avahi-daemon.service`
+
 #####################################################
 #                Unpack SysRescue                   #
 #####################################################
@@ -36,10 +71,24 @@ mv /tmp/modules "$AIROOTFS_UNPACK_DIR/tmp/opt"
 # Change dirs instead of chroot due to issues. We'll relatively reference this path the entire time
 cd "$AIROOTFS_UNPACK_DIR"
 
-# set XFCE configurations (dark mode and panel)
+# remove pacman packages
+chroot "$AIROOTFS_UNPACK_DIR"
+pacman --noconfirm -R "$PACMAN_PKGS_TO_REMOVE"
+exit
 
+# update firefox policies
+mv ./tmp/airootfs/firefox_policies.json ./opt/firefox-esr/distribution/policies.json
+
+# set XFCE configurations for root (dark mode and panel)
 rm -rf ./root/.config
 tar -zxvf "./tmp/airootfs/config.tar.gz" -C ./root/
+
+# remove the firewall
+rm -f ./etc/systemd/system/multi-user.target.wants/iptables.service
+rm -f ./etc/systemd/system/multi-user.target.wants/ip6tables.service
+
+# disable avahi
+ln -s /dev/null /etc/systemd/system/avahi-daemon.service
 
 # modify hosts file and hostname (can also be done in yaml but i want it here)
 cat > "./etc/hosts" <<EOF
@@ -136,11 +185,10 @@ cd "$PACKAGE_DIR"
 chmod 777 "$PACKAGE_DIR"
 
 # update pacman db & install packages
-pacman --noconfirm -Sy git base-devel fakeroot ntfs-3g rpmextract open-vm-tools python-pip nmap
-## NOTE: JDK is over 450MB.
-pacman --noconfirm -S jdk-openjdk
+pacman --noconfirm -Sy "$PACMAN_PKGS"
 
-# install nessus
+################## Install Nessus ##################
+
 useradd "$TEMP_USR"
 echo "$TEMP_USR ALL=(ALL) NOPASSWD: ALL" > "/etc/sudoers.d/$TEMP_USR"
 

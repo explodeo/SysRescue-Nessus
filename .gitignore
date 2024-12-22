@@ -42,6 +42,9 @@
 
 ############## Keep These Files ##############
 
+# keep the updated firefox policies
+!**firefox_policies.json
+
 # ignore certain procedures only. keep others
 !**Prepare_Windows.md
 # keep all READMEs

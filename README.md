@@ -26,16 +26,21 @@ Follow this procedure to build a bootable SystemRescue ISO with Nessus as a live
 
 1. Boot SystemRescue in a VM 
 
-3. From the host machine, copy everything into the SystemRescue VM. Note that the target is hard-coded in the `build.sh` script's environment variables :
+2. From the host machine, copy everything into the SystemRescue VM. Note that the target is hard-coded in the `build.sh` script's environment variables :
 ```sh
     scp -r ./airootfs ./modules ./build.sh root@X.X.X.X:/tmp/
 ```
 
-1. From SystemRescue, run the rebuild script:
+3. From SystemRescue, run the rebuild script:
 ```sh
 cd /tmp
 chmod -x build.sh
 ./build.sh
+```
+
+4. Once complete, `scp` the file back to your host machine.
+```sh
+scp root@X.X.X.X:/tmp/sysrescue/ACASLive.iso /path/to/local/ACASLive.iso
 ```
 
 ## System Requirements
@@ -44,6 +49,18 @@ These are the recommended requirements to boot SystemRescue in `copytoram` mode 
 
 - **CPU:** 4 Cores / 8 Threads
 - **RAM:** 32GB min, less if remapping /opt to a persistent disk
+
+
+## Booting the Live CD
+
+When you boot the SystemRescue CD choose the `copytoram` option and hit **Tab**. Add the following to the exisitng boot cmdline:
+```sh
+cow_spacesize=20G
+```
+You can add more, but in order for Nessus to run with compiled plugins, it needs to think that the PC has enough disk space. I recommend 20GB at a minimum.
+
+Allocating memory is fine, however, if you do this from within a VM, the host machine will will reserve all of the allocated ram for the VM.
+
 
 ***
 
