@@ -25,6 +25,8 @@ PACMAN_PKGS="git \
             python-pip \
             jdk-openjdk \
             python-pyserial \
+            expect \
+            zenity \
             nmap"
 
 PACMAN_PKGS_TO_REMOVE="timeshift \
@@ -43,8 +45,10 @@ PACMAN_PKGS_TO_REMOVE="timeshift \
                       pulseaudio-alsa \
                       openvpn \
                       networkmanager-openvpn \
+                      featherpad \
                       xfce4-pulseaudio-plugin" # need to rebuild config.tar.gz
 #                       remmina" # add this line to remove VNC viewing capability
+# NOTE: we removed featherpad to install lite-xl below
 
 #### Note: we cannot remove avahi, but we can disable the service. this will cause us to lose samba, but whatever
 ####       look for the line below: `ln -s /dev/null /etc/systemd/system/avahi-daemon.service`
@@ -102,6 +106,11 @@ echo 'acas' > "./etc/hostname"
 echo 'alias l="ls"' >> ./root/.bashrc
 echo 'alias la="ls -la"' >> ./root/.bashrc
 echo 'alias activate="source /root/.venv/bin/activate"' >> ./root/.bashrc
+echo 'alias activate="source /root/.venv/bin/activate"' >> ./root/.bashrc
+echo 'alias serial_9600="picocom -b 9600 -y n -d 8 -p 1 /dev/ttyS0"' >> ./root/.bashrc
+echo 'alias serial_115200="picocom -b 115200 -y n -d 8 -p 1 /dev/ttyS0"' >> ./root/.bashrc
+echo 'alias serialusb_9600="picocom -b 9600 -y n -d 8 -p 1 /dev/ttyUSB0"' >> ./root/.bashrc
+echo 'alias serialusb_115200="picocom -b 115200 -y n -d 8 -p 1 /dev/ttyUSB0"' >> ./root/.bashrc
 cat >> ./root/.bashrc <<EOF
 
 function https-server() {
@@ -158,6 +167,14 @@ for file in $(ls -1 ./opt/scripts/ | grep \.sh) ; do
     # since networkctl exists on archlinux, we leave the '.sh extension'
     ln -s "/opt/scripts/$file" "./usr/bin/$file"
 done
+
+
+################### Add Lite-XL IDE ###################
+
+wget https://github.com/lite-xl/lite-xl/releases/download/v2.1.7/lite-xl-v2.1.7-addons-linux-x86_64-portable.tar.gz -O ./opt/litexl.tgz
+tar -zxvf ./opt/litexl.tgz -C ./opt
+rm ./opt/litexl.tgz
+# note that the config tar archive relies on this being present
 
 ################ Add Notes/Procedures ################
 mkdir -p ./root/Desktop/
@@ -235,6 +252,24 @@ ln -s /usr/lib/systemd/system/nessusd.service ./etc/systemd/system/nessusd.servi
 
 # close the srm and put it with airootfs.sfs
 cowpacman2srm -s create "$SYSRESCUE_EXTRACT_DIR/filesystem/sysresccd/ACAS.srm"
+
+############# Install Open-Source Tools #############
+# Privesc scripts
+mkdir -p ./opt/utils/{PEASS-ng, PSpy}
+
+wget -O linpeas.sh 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/linpeas.sh'
+wget -O winpeas_x64.exe 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/winPEASx64.exe'
+wget -O winpeas_x86.exe 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/winPEASx86.exe'
+wget -O winpeas.bat 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/winPEAS.bat'
+
+# process snooping (PSpy)
+wget -O pspy32 'https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy32'
+wget -O pspy64 'https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy64'
+
+# gtfobins
+cd ./opt
+wget -r https://gtfobins.github.io/#
+cd /tmp/srm_content
 
 #####################################################
 #               Repack SystemRescue                 #

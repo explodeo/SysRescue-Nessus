@@ -27,7 +27,6 @@
 **.srm
 
 # ignore switch config files
-**/oh-switch-disk
 **/-config
 **/*.swi
 

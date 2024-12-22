@@ -1,0 +1,5 @@
+baseline, hostname, zerotouch-config, boot-config, startup-config,
+XXXXXX, my-switch-1, zerotouch-config, boot-config, sw1-startup-config,
+XXXXXX, my-switch-2, zerotouch-config, boot-config, sw2-startup-config,
+XXXXXX, my-switch-3, zerotouch-config, boot-config, sw3-startup-config,
+XXXXXX, my-switch-4, zerotouch-config, boot-config, sw4-startup-config,
