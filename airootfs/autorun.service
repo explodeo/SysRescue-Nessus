@@ -1,0 +1,11 @@
+[Unit]
+Description=SystemRescue and Nessus Initializer
+After=nessusd.service
+Requires=nessusd.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/autorun.sh
+
+[Install]
+WantedBy=multi-user.target

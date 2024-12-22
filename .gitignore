@@ -1,0 +1,58 @@
+# ignore nessus configuration files
+**.json
+
+# ignore network connection files
+**.nmconnection
+
+# ignore certain procedures only. keep others
+## keep
+! Prepare_Windows.md
+
+## ignore by default
+**/procedures
+**/Notes
+**/notes
+**/AA_Checklists
+
+**/__pycache__
+
+# ignore built TGZs and config files
+**/dist/*
+**.json
+**.nmconnection
+
+# ignore RPMs and python deps (download them yourself)
+**.exe
+**.whl
+**.tar.gz
+**.tgz
+**.tgz
+**.zip
+**.rpm
+**.iso
+**.srm
+
+# ignore switch config files
+**/oh-switch-disk
+**/-config
+**/*.swi
+
+**/example-plugins
+
+**/.other
+
+# ignore Nessus Policy files
+**.nessus
+**.xml
+
+# Ignore system-specific notes
+**/Notes
+
+# only keep setup notes
+# !./src/Notes/setup.md
+
+# only keep the example config JSON
+!**example-config.json
+
+# keep the .config archive for rebuilds
+!**config.tar.gz
