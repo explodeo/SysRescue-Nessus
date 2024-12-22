@@ -1,0 +1,16 @@
+[connection]
+id=auto
+uuid=8cea914f-403f-48ac-8f6f-b41b9236ba09
+type=ethernet
+autoconnect=false
+
+[ethernet]
+
+[ipv4]
+addr-gen-mode=stable-privacy
+method=auto
+
+[ipv6]
+method=ignore
+
+[proxy]
