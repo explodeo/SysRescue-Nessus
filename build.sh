@@ -15,7 +15,7 @@ PACKAGE_DIR=/tmp/packages
 ISO_NAME="ACASLive.iso"
 
 # Packages to install into the second SRM on top of stock SystemRescue
-### NOTE: jdk-openjdk is <450MB. Remove it and reconfigure 
+### NOTE: jdk-openjdk is <450MB. Remove it and reconfigure
 PACMAN_PKGS="git \
             base-devel \
             fakeroot \
@@ -76,9 +76,7 @@ mv /tmp/modules "$AIROOTFS_UNPACK_DIR/tmp/opt"
 cd "$AIROOTFS_UNPACK_DIR"
 
 # remove pacman packages
-chroot "$AIROOTFS_UNPACK_DIR"
-pacman --noconfirm -R "$PACMAN_PKGS_TO_REMOVE"
-exit
+chroot "$AIROOTFS_UNPACK_DIR" pacman --noconfirm -R $PACMAN_PKGS_TO_REMOVE
 
 # update firefox policies
 mv ./tmp/airootfs/firefox_policies.json ./opt/firefox-esr/distribution/policies.json
@@ -92,7 +90,8 @@ tar -zxvf "./tmp/airootfs/config.tar.gz" -C ./root/
 # rm -f ./etc/systemd/system/multi-user.target.wants/ip6tables.service
 
 # disable avahi
-ln -s /dev/null /etc/systemd/system/avahi-daemon.service
+rm -f ./etc/systemd/system/avahi-daemon.service
+ln -s /dev/null ./etc/systemd/system/avahi-daemon.service
 
 # modify hosts file and hostname (can also be done in yaml but i want it here)
 cat > "./etc/hosts" <<EOF
@@ -181,8 +180,11 @@ mkdir -p ./root/Desktop/
 mv ./tmp/opt/Notes ./root/Desktop/Procedures
 
 ################################## ***************** ##################################
-############################# TODO: ADD OSD BUILD SCRIPTS #############################
+################################# TODO: FIX OSD BUILD #################################
 ################################## ***************** ##################################
+
+mv ./tmp/opt/oh-switch-disk ./opt/OSD
+chmod 755 ./opt/OSD/*.sh
 
 ## cleanup build files from airootfs/tmp
 rm -rf ./tmp/airootfs ./tmp/opt
@@ -227,7 +229,7 @@ cd "$PACKAGE_DIR"
 chmod 777 "$PACKAGE_DIR"
 
 # update pacman db & install packages
-pacman --noconfirm -Sy "$PACMAN_PKGS"
+pacman --noconfirm -Sy $PACMAN_PKGS
 
 ################## Install Nessus ##################
 
@@ -250,30 +252,35 @@ cd /tmp/srm_content
 mkdir -p ./etc/systemd/system
 ln -s /usr/lib/systemd/system/nessusd.service ./etc/systemd/system/nessusd.service
 
-# close the srm and put it with airootfs.sfs
-cowpacman2srm -s create "$SYSRESCUE_EXTRACT_DIR/filesystem/sysresccd/ACAS.srm"
-
 ############# Install Open-Source Tools #############
+cd /tmp/srm_content
 # Privesc scripts
-mkdir -p ./opt/utils/{PEASS-ng, PSpy}
-
-wget -O linpeas.sh 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/linpeas.sh'
-wget -O winpeas_x64.exe 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/winPEASx64.exe'
-wget -O winpeas_x86.exe 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/winPEASx86.exe'
-wget -O winpeas.bat 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/winPEAS.bat'
+mkdir -p ./opt/utils/{PEASS-ng,PSpy}
+wget -O ./opt/utils/PEASS-ng/linpeas.sh 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/linpeas.sh'
+wget -O ./opt/utils/PEASS-ng/winpeas_x64.exe 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/winPEASx64.exe'
+wget -O ./opt/utils/PEASS-ng/winpeas_x86.exe 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/winPEASx86.exe'
+wget -O ./opt/utils/PEASS-ng/winpeas.bat 'https://github.com/peass-ng/PEASS-ng/releases/download/20241222-e17c35a2/winPEAS.bat'
 
 # process snooping (PSpy)
-wget -O pspy32 'https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy32'
-wget -O pspy64 'https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy64'
+wget -O ./opt/utils/PSpy/pspy32 'https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy32'
+wget -O ./opt/utils/PSpy/pspy64 'https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy64'
 
-# gtfobins
+# gtfobins (unset errors on recursive wget due to perl errors)
 cd ./opt
-wget -r https://gtfobins.github.io/#
+set +e
+wget -r https://gtfobins.github.io/ --content-on-error
+set -e
+mv gtfobins.github.io GTFOBins
 cd /tmp/srm_content
+
+# close the srm and put it with airootfs.sfs
+cowpacman2srm -s create "$SYSRESCUE_EXTRACT_DIR/filesystem/sysresccd/ACAS.srm"
 
 #####################################################
 #               Repack SystemRescue                 #
 #####################################################
+
+cd "$SYSRESCUE_DIR"
 
 sysrescue-customize --rebuild --source="$SYSRESCUE_EXTRACT_DIR" --dest="$SYSRESCUE_DIR/$ISO_NAME"
 
