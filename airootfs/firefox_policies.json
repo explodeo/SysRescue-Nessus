@@ -17,18 +17,27 @@
         "OfferToSaveLogins": false,
         "PasswordManagerEnabled": false,
         "DisableProfileImport": true,
+        "DisplayBookmarksToolbar": "always",
         "Bookmarks": [
             {
-                "url": "file:///root/Desktop/Procedures",
-                "name": "Procedures"
+                "URL": "file:///root/Desktop/Procedures",
+                "Title": "Procedures",
+                "Placement": "toolbar"
             },
             {
-                "url": "https://localhost:8834",
-                "name": "Nessus Scanner"
+                "URL": "https://localhost:8834",
+                "Title": "Nessus Scanner",
+                "Placement": "toolbar"
             },
             {
-                "url": "https://localhost:8834/api#/overview",
-                "name": "Nessus API"
+                "URL": "https://localhost:8080/",
+                "Title": "GTFOBins",
+                "Placement": "toolbar"
+            },
+            {
+                "URL": "https://localhost:8834/api#/overview",
+                "Title": "Nessus API",
+                "Placement": "toolbar"
             }
         ]
     }

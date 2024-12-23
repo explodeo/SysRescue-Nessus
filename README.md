@@ -13,9 +13,9 @@ The purpose `autorun` service and script is to allow SystemRescue to configure N
 
 ### The `modules` Directory
 
-The `./src/modules` directory is where you put all the things you want to add which are not modifications to the airootfs. For example, this repo uses source code from the [NessusAPI]() github.
+The `./src/modules` directory is where you put all the things you want to add which are not modifications to the airootfs. For example, this repo uses source code from the [NessusAPI](https://github.com/explodeo/NessusAPI) github.
 
-Actually installing the scripts happens in the [build script](./src/airootfs/rebuild_local.sh).
+Actually installing the scripts happens in the [build script](./src/airootfs/build.sh).
 **This is a SUPER MANUAL process!**
 
 

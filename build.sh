@@ -135,7 +135,6 @@ function http-server() {
 
 EOF
 
-
 #### setup firstrun script & service
 mv ./tmp/airootfs/nessus_reconfigure.sh ./usr/local/bin/nessus_reconfigure.sh
 chmod 744 ./usr/local/bin/nessus_reconfigure.sh
@@ -167,7 +166,6 @@ for file in $(ls -1 ./opt/scripts/ | grep \.sh) ; do
     # since networkctl exists on archlinux, we leave the '.sh extension'
     ln -s "/opt/scripts/$file" "./usr/bin/$file"
 done
-
 
 ################### Add Lite-XL IDE ###################
 
