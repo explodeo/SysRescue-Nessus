@@ -264,12 +264,14 @@ wget -O ./opt/utils/PEASS-ng/winpeas.bat 'https://github.com/peass-ng/PEASS-ng/r
 wget -O ./opt/utils/PSpy/pspy32 'https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy32'
 wget -O ./opt/utils/PSpy/pspy64 'https://github.com/DominicBreuker/pspy/releases/download/v1.2.1/pspy64'
 
-# gtfobins (unset errors on recursive wget due to perl errors)
+# gtfobins/lolbas (unset errors on recursive wget due to perl errors)
 cd ./opt
 set +e
 wget -r https://gtfobins.github.io/ --content-on-error
+wget -r https://lolbas-project.github.io/ --content-on-error
 set -e
 mv gtfobins.github.io GTFOBins
+mv lolbas-project.github.io LOLBAS
 cd /tmp/srm_content
 
 # close the srm and put it with airootfs.sfs
