@@ -1,0 +1,15 @@
+[Unit]
+Description=SystemRescue and Nessus Initializer
+After=nessusd.service
+Requires=nessusd.service
+
+[Service]
+Type=oneshot
+ExecStartPre=-/usr/bin/sh -c "/usr/bin/echo -e 'acasuser\nacasuser\ny\n\ny\n' | /opt/nessus/sbin/nessuscli adduser acasuser || true"
+ExecStartPre=-/usr/bin/sh -c "echo -e 'y\n' | /opt/nessus/sbin/nessuscli fix --reset || true"
+ExecStartPre=-/usr/bin/sh -c "echo -e 'y\n' | /opt/nessus/sbin/nessuscli fetch --security-center || true"
+ExecStartPre=-/usr/local/bin/nessus_reconfigure.sh
+ExecStart=/usr/bin/rm /usr/local/bin/nessus_reconfigure.sh /etc/systemd/system/multi-user.target.wants/firstrun.service /usr/lib/systemd/system/firstrun.service 
+
+[Install]
+WantedBy=multi-user.target

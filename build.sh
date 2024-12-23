@@ -23,6 +23,7 @@ PACMAN_PKGS="git \
             rpmextract \
             open-vm-tools \
             python-pip \
+            python-setuptools \
             jdk-openjdk \
             python-pyserial \
             expect \
@@ -135,11 +136,11 @@ function http-server() {
 EOF
 
 
-#### setup autorun script & service
-mv ./tmp/airootfs/autorun.sh ./usr/local/bin/autorun.sh
-chmod 744 ./usr/local/bin/autorun.sh
-mv ./tmp/airootfs/autorun.service ./usr/lib/systemd/system/autorun.service
-ln -s /usr/lib/systemd/system/autorun.service ./etc/systemd/system/multi-user.target.wants/autorun.service
+#### setup firstrun script & service
+mv ./tmp/airootfs/nessus_reconfigure.sh ./usr/local/bin/nessus_reconfigure.sh
+chmod 744 ./usr/local/bin/nessus_reconfigure.sh
+mv ./tmp/airootfs/firstrun.service ./usr/lib/systemd/system/firstrun.service
+ln -s /usr/lib/systemd/system/firstrun.service ./etc/systemd/system/multi-user.target.wants/firstrun.service
 
 ################## Add NessusAPI ##################
 
